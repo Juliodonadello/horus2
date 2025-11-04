@@ -1,0 +1,6 @@
+fastapi
+uvicorn[standard]
+requests
+influxdb-client
+psycopg2-binary
+pydantic

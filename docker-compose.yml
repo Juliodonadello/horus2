@@ -1,69 +1,40 @@
-version: "3.8"
-
+version: '3.8'
 services:
-  backend:
-    container_name: horus-backend
-    build: ./backend
-    ports:
-      - "8000:8000"
-    environment:
-      - INFLUX_URL=http://influxdb:8086
-      - INFLUX_TOKEN=my-influx-token
-      - INFLUX_ORG=horus-org
-      - INFLUX_BUCKET=horus-bucket
-      - POSTGRES_HOST=postgres
-      - POSTGRES_DB=horus
-      - POSTGRES_USER=horus_user
-      - POSTGRES_PASSWORD=horus_pass
-    depends_on:
-      - influxdb
-      - postgres
-    restart: unless-stopped
-
-  influxdb:
-    container_name: horus-influxdb
-    image: influxdb:2.7.5
-    ports:
-      - "8086:8086"
-    environment:
-      - INFLUXDB_INIT_MODE=setup
-      - INFLUXDB_INIT_USERNAME=admin
-      - INFLUXDB_INIT_PASSWORD=admin
-      - INFLUXDB_INIT_ORG=horus-org
-      - INFLUXDB_INIT_BUCKET=horus-bucket
-      - INFLUXDB_INIT_ADMIN_TOKEN=my-influx-token
-    volumes:
-      - influxdb_data:/var/lib/influxdb2
-    restart: unless-stopped
-
   postgres:
-    container_name: horus-postgres
-    image: postgres:15.6
+    image: postgres:13
+    container_name: postgres_db
     environment:
-      POSTGRES_DB: horus
-      POSTGRES_USER: horus_user
-      POSTGRES_PASSWORD: horus_pass
+      POSTGRES_USER: user
+      POSTGRES_PASSWORD: password
+      POSTGRES_DB: sensordata
     ports:
       - "5432:5432"
     volumes:
-      - pgdata:/var/lib/postgresql/data
-    restart: unless-stopped
+      - postgres_data:/var/lib/postgresql/data
 
-  grafana:
-    container_name: horus-grafana
-    image: grafana/grafana:11.3.0
-    depends_on:
-      - influxdb
-    ports:
-      - "3000:3000"
+  influxdb:
+    image: influxdb:2.0
+    container_name: influxdb
     environment:
-      - GF_SECURITY_ADMIN_USER=admin
-      - GF_SECURITY_ADMIN_PASSWORD=admin
+      - DOCKER_INFLUXDB_INIT_MODE=setup
+      - DOCKER_INFLUXDB_INIT_USERNAME=user
+      - DOCKER_INFLUXDB_INIT_PASSWORD=password
+      - DOCKER_INFLUXDB_INIT_ORG=my-org
+      - DOCKER_INFLUXDB_INIT_BUCKET=sensordata
+      - DOCKER_INFLUXDB_INIT_ADMIN_TOKEN=my-super-secret-token
+    ports:
+      - "8086:8086"
     volumes:
-      - grafana_data:/var/lib/grafana
-    restart: unless-stopped
+      - influxdb_data:/var/lib/influxdb2
+
+  backend:
+    build: ./src
+    ports:
+      - "8000:8000"
+    depends_on:
+      - postgres
+      - influxdb
 
 volumes:
+  postgres_data:
   influxdb_data:
-  pgdata:
-  grafana_data:

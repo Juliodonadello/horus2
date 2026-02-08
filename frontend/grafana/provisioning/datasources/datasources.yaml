@@ -1,0 +1,30 @@
+apiVersion: 1
+datasources:
+  - name: InfluxDB
+    type: influxdb
+    access: proxy
+    url: http://influxdb:8086
+    isDefault: true
+    editable: true
+    jsonData:
+      organization: horus-org
+      defaultBucket: horus-bucket
+      version: Flux
+    secureJsonData:
+      token: "my-influx-token"
+
+  - name: PostgreSQL
+    type: postgres
+    url: postgres:5432
+    access: proxy
+    isDefault: false
+    editable: true
+    database: horus
+    user: horus_user
+    secureJsonData:
+      password: horus_pass
+    jsonData:
+      sslmode: disable
+      maxOpenConns: 0
+      maxIdleConns: 2
+      connMaxLifetime: 14400

@@ -4,10 +4,10 @@
       {
         "builtIn": 1,
         "datasource": {
-          "type": "grafana",
-          "uid": "-- Grafana --"
+          "type": "influxdb",
+          "uid": "InfluxDB"
         },
-        "enable": true,
+        "query": "from(bucket: \"horus-bucket\")\n  |> range(start: -15m)\n  |> filter(fn: (r) => r._measurement == \"sensor_readings\" and r.type == \"voltage\" and r._field == \"value\")\n  |> filter(fn: (r) => r.site_id =~ /site_00[1-8]/)\n  |> aggregateWindow(every: 1m, fn: mean, createEmpty: false)\n  |> keep(columns: [\"_time\", \"_value\", \"site_id\"])\n  |> map(fn: (r) => ({_time: r._time, _value: r._value, site_id: r.site_id, _field: \"value\", _measurement: \"voltage\", name: r.site_id}))\n  |> group(columns: [\"site_id\"])\n",
         "hide": true,
         "iconColor": "rgba(0, 211, 255, 1)",
         "name": "Annotations & Alerts",
@@ -15,7 +15,6 @@
       }
     ]
   },
-  "editable": true,
   "fiscalYearStartMonth": 0,
   "graphTooltip": 1,
   "id": 1,
@@ -99,7 +98,14 @@
             "type": "influxdb",
             "uid": "InfluxDB"
           },
-          "query": "from(bucket: \"horus-bucket\")\n  |> range(start: -1h)\n  |> filter(fn: (r) => r._measurement == \"sensor_readings\" and r.type == \"voltage\")\n  |> filter(fn: (r) => r._field == \"value\")\n  |> last()",
+          "query": "from(bucket: "horus-bucket")
+  |> range(start: -15m)
+  |> filter(fn: (r) => r._measurement == "sensor_readings" and r.type == "voltage" and r._field == "value")
+  |> filter(fn: (r) => r.site_id =~ /site_00[1-8]/)
+  |> last()
+  |> map(fn: (r) => ({_time: r._time, _value: r._value, _field: r.site_id, _measurement: "voltage", site_id: r.site_id, name: r.site_id}))
+  |> keep(columns: ["_time", "_value", "_field"])
+  |> group(columns: ["_field"])",
           "format": "time_series"
         }
       ],
@@ -160,7 +166,7 @@
             "type": "influxdb",
             "uid": "InfluxDB"
           },
-          "query": "from(bucket: \"horus-bucket\")\n  |> range(start: -1h)\n  |> filter(fn: (r) => r._measurement == \"sensor_readings\" and r.type == \"current\")\n  |> filter(fn: (r) => r._field == \"value\")\n  |> last()",
+          "query": "from(bucket: \"horus-bucket\")\n  |> range(start: -15m)\n  |> filter(fn: (r) => r._measurement == \"sensor_readings\" and r.type == \"current\" and r._field == \"value\")\n  |> filter(fn: (r) => r.site_id =~ /site_00[1-8]/)\n  |> last()\n  |> map(fn: (r) => ({_time: r._time, _value: r._value, _field: r.site_id, _measurement: \"current\", site_id: r.site_id, name: r.site_id}))\n  |> keep(columns: [\"_time\", \"_value\", \"_field\"])\n  |> group(columns: [\"_field\"])",
           "format": "time_series"
         }
       ],
@@ -247,7 +253,7 @@
             "type": "influxdb",
             "uid": "InfluxDB"
           },
-          "query": "from(bucket: \"horus-bucket\")\n  |> range(start: -1h)\n  |> filter(fn: (r) => r._measurement == \"sensor_readings\" and r.type == \"voltage\")\n  |> filter(fn: (r) => r._field == \"value\")\n  |> aggregateWindow(every: 1m, fn: mean, createEmpty: false)",
+          "query": "from(bucket: \"horus-bucket\")\n  |> range(start: v.timeRangeStart, stop: v.timeRangeStop)\n  |> filter(fn: (r) => r[\"_measurement\"] == \"sensor_readings\")\n  |> filter(fn: (r) => r[\"_field\"] == \"value\")\n  |> filter(fn: (r) => r[\"sensor\"] == \"voltage_site_001\" or r[\"sensor\"] == \"voltage_site_002\" or r[\"sensor\"] == \"voltage_site_003\" or r[\"sensor\"] == \"voltage_site_004\" or r[\"sensor\"] == \"voltage_site_005\" or r[\"sensor\"] == \"voltage_site_006\" or r[\"sensor\"] == \"voltage_site_007\" or r[\"sensor\"] == \"voltage_site_008\")\n  |> filter(fn: (r) => r[\"site_id\"] == \"site_001\" or r[\"site_id\"] == \"site_002\" or r[\"site_id\"] == \"site_003\" or r[\"site_id\"] == \"site_004\" or r[\"site_id\"] == \"site_005\" or r[\"site_id\"] == \"site_006\" or r[\"site_id\"] == \"site_007\" or r[\"site_id\"] == \"site_008\")\n  |> filter(fn: (r) => r[\"type\"] == \"voltage\")\n  |> aggregateWindow(every: v.windowPeriod, fn: last, createEmpty: false)\n  |> map(fn: (r) => ({ r with _field: r.site_id }))\n  |> keep(columns: [\"_time\", \"_value\", \"_field\"])\n  |> group(columns: [\"_field\"])",
           "format": "time_series"
         }
       ],
@@ -334,7 +340,7 @@
             "type": "influxdb",
             "uid": "InfluxDB"
           },
-          "query": "from(bucket: \"horus-bucket\")\n  |> range(start: -1h)\n  |> filter(fn: (r) => r._measurement == \"sensor_readings\" and r.type == \"current\")\n  |> filter(fn: (r) => r._field == \"value\")\n  |> aggregateWindow(every: 1m, fn: mean, createEmpty: false)",
+          "query": "from(bucket: \"horus-bucket\")\n  |> range(start: v.timeRangeStart, stop: v.timeRangeStop)\n  |> filter(fn: (r) => r[\"_measurement\"] == \"sensor_readings\")\n  |> filter(fn: (r) => r[\"_field\"] == \"value\")\n  |> filter(fn: (r) => r[\"sensor\"] == \"current_site_001\" or r[\"sensor\"] == \"current_site_002\" or r[\"sensor\"] == \"current_site_003\" or r[\"sensor\"] == \"current_site_004\" or r[\"sensor\"] == \"current_site_005\" or r[\"sensor\"] == \"current_site_006\" or r[\"sensor\"] == \"current_site_007\" or r[\"sensor\"] == \"current_site_008\")\n  |> filter(fn: (r) => r[\"site_id\"] == \"site_001\" or r[\"site_id\"] == \"site_002\" or r[\"site_id\"] == \"site_003\" or r[\"site_id\"] == \"site_004\" or r[\"site_id\"] == \"site_005\" or r[\"site_id\"] == \"site_006\" or r[\"site_id\"] == \"site_007\" or r[\"site_id\"] == \"site_008\")\n  |> filter(fn: (r) => r[\"type\"] == \"current\")\n  |> aggregateWindow(every: v.windowPeriod, fn: last, createEmpty: false)\n  |> map(fn: (r) => ({ r with _field: r.site_id }))\n  |> keep(columns: [\"_time\", \"_value\", \"_field\"])\n  |> group(columns: [\"_field\"])",
           "format": "time_series"
         }
       ],
@@ -421,7 +427,7 @@
             "type": "influxdb",
             "uid": "InfluxDB"
           },
-          "query": "v = from(bucket: \"horus-bucket\")\n  |> range(start: -1h)\n  |> filter(fn: (r) => r._measurement == \"sensor_readings\" and r.type == \"voltage\")\n  |> filter(fn: (r) => r._field == \"value\")\n  |> aggregateWindow(every: 1m, fn: mean, createEmpty: false)\n  |> rename(columns: {_value: \"voltage\"})\n\nc = from(bucket: \"horus-bucket\")\n  |> range(start: -1h)\n  |> filter(fn: (r) => r._measurement == \"sensor_readings\" and r.type == \"current\")\n  |> filter(fn: (r) => r._field == \"value\")\n  |> aggregateWindow(every: 1m, fn: mean, createEmpty: false)\n  |> rename(columns: {_value: \"current\"})\n\njoin(tables: {v:v, c:c}, on: [\"_time\", \"site_id\"])\n  |> map(fn: (r) => ({r with _value: r.voltage * r.current, _measurement: \"power\"}))\n  |> keep(columns: [\"_time\", \"_value\", \"_measurement\", \"site_id\"])",
+          "query": "v = from(bucket: \"horus-bucket\")\n  |> range(start: -1h)\n  |> filter(fn: (r) => r._measurement == \"sensor_readings\" and r.type == \"voltage\")\n  |> filter(fn: (r) => r._field == \"value\")\n  |> filter(fn: (r) => r.site_id =~ /site_00[1-8]/)\n  |> aggregateWindow(every: 1m, fn: mean, createEmpty: false)\n  |> rename(columns: {_value: \"voltage\"})\n\nc = from(bucket: \"horus-bucket\")\n  |> range(start: -1h)\n  |> filter(fn: (r) => r._measurement == \"sensor_readings\" and r.type == \"current\")\n  |> filter(fn: (r) => r._field == \"value\")\n  |> filter(fn: (r) => r.site_id =~ /site_00[1-8]/)\n  |> aggregateWindow(every: 1m, fn: mean, createEmpty: false)\n  |> rename(columns: {_value: \"current\"})\n\njoin(tables: {v:v, c:c}, on: [\"_time\", \"site_id\"])\n  |> map(fn: (r) => ({_time: r._time, _value: r.voltage * r.current, _measurement: \"power\", site_id: r.site_id, _field: r.site_id}))\n  |> keep(columns: [\"_time\", \"_value\", \"_field\"])\n  |> group(columns: [\"_field\"])",
           "format": "time_series"
         }
       ],
@@ -496,7 +502,7 @@
       "type": "table"
     }
   ],
-  "refresh": "10s",
+  "refresh": "5s",
   "schemaVersion": 36,
   "style": "dark",
   "tags": ["horus", "power"],
@@ -504,7 +510,7 @@
     "list": []
   },
   "time": {
-    "from": "now-1h",
+    "from": "now-15m",
     "to": "now"
   },
   "timepicker": {},

@@ -115,6 +115,24 @@ CREATE TABLE events (
 - El proyecto es **agnóstico** a los sensores: implementar la interfaz `ISensor` en `sensors/base.py` y añadir nuevos sensores.
 - Los sensores simulados (`VoltageSensor`, `CurrentSensor`) ahora usan random walk para comportamiento más realista.
 
+## Generate architecture image (Python)
+
+A Python script can generate a simple architecture JPG without external Node tools.
+
+Prerequisite: install Pillow:
+
+```bash
+pip install pillow
+```
+
+Run:
+
+```bash
+python scripts/generate_architecture.py
+```
+
+This writes `docs/architecture.jpg`.
+
 ## Mejoras recientes
 
 - ✅ Arreglada indentación de Point creation en backend

@@ -173,9 +173,9 @@ This writes `docs/architecture.jpg`.
 
 ## TO DO LIST
 
-opcion1:
-Hay un reporsitorio maestor que posee la arquitectura de las cajas con los sensores. Estos endpoints tienen un servicio de SNMP el cual es consultado por un cliente remoto para obtener datos instantaneos.
-Se necesita un desarrollo similar al utilizado en la simulación que consulte mediante un cliente SNMP al servidor SNMP.
+opcion1 (SNMP):
+Hay un reporsitorio maestro que posee el desarrollo de las cajas con los sensores. Estos endpoints tienen un cliente de SNMP el cual es consultado por un servidor SNMP remoto para obtener datos instantaneos.
+Se necesita un desarrollo que busca obtener datapoints similares a la simulación, pero que consulte mediante un servidor SNMP a los clientes SNMP que representan cada caja de sensores.
 
-opcion2: 
-Armar el codigo simulador que se usa acualmente en /edge para deployar en placas esp32 y que le posteen a los endpoints de las apis actuales.
+opcion2 (HTTP): 
+Armar en un nuevo directorio codigo similar al simulador, que se usa acualmente en /edge, pero para deployar en placas esp32 y que le posteen las apis actuales del backend.

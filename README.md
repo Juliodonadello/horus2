@@ -20,7 +20,7 @@ Proyecto base para la plataforma de monitoreo de baterías **Horus**.
 ```bash
 docker-compose up --build
 ```
-- **Backend**: http://localhost:8000
+- **Backend + Horus Control Center**: http://localhost:8000
 - **Grafana**: http://localhost:3000 (usuario: `admin`, contraseña: `admin`)
 - **InfluxDB**: http://localhost:8086 (usuario: `admin`, contraseña: `adminpassword`)
 - **PostgreSQL**: localhost:5432 (usuario: `horus_user`, contraseña: `horus_pass`)
@@ -61,6 +61,17 @@ Verifica la salud de los servicios (InfluxDB y PostgreSQL).
   "postgres": "ok"
 }
 ```
+
+### Simulaciones avanzadas bajo demanda
+
+El backend ahora incluye un **Simulation Manager** para ejecutar escenarios desde la web propia:
+
+- `GET /simulation/scenarios`: lista escenarios disponibles (stable_day, peak_solar, storm_event, stress_test)
+- `POST /simulation/start`: inicia una simulación con `run_id`, `site_id`, `scenario`, duración e intervalo
+- `POST /simulation/stop/{run_id}`: detiene una ejecución activa
+- `GET /simulation/status`: estado de ejecuciones, puntos emitidos y progreso
+
+La página principal (`/`) ahora renderiza el **Horus Control Center**, que embebe Grafana vía `iframe` y agrega controles visuales para lanzar y detener simulaciones en tiempo real.
 
 ## Grafana Dashboards
 

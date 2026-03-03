@@ -170,3 +170,12 @@ This writes `docs/architecture.jpg`.
 2. Verificar credenciales en `docker-compose.yml`
 3. Verificar que la tabla `events` existe: `docker exec horus-postgres psql -U horus_user -d horus -c "\dt"`
 #
+
+## TO DO LIST
+
+opcion1:
+Hay un reporsitorio maestor que posee la arquitectura de las cajas con los sensores. Estos endpoints tienen un servicio de SNMP el cual es consultado por un cliente remoto para obtener datos instantaneos.
+Se necesita un desarrollo similar al utilizado en la simulación que consulte mediante un cliente SNMP al servidor SNMP.
+
+opcion2: 
+Armar el codigo simulador que se usa acualmente en /edge para deployar en placas esp32 y que le posteen a los endpoints de las apis actuales.

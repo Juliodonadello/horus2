@@ -294,3 +294,18 @@ Esto genera `docs/architecture.jpg`.
 **Quiero borrar todos los datos**
 1. Ejecutar `docker compose down -v`
 2. Volver a levantar con `docker compose up --build`
+
+**Error de conexión a PostgreSQL:**
+1. Verificar que postgres está corriendo: `docker-compose ps`
+2. Verificar credenciales en `docker-compose.yml`
+3. Verificar que la tabla `events` existe: `docker exec horus-postgres psql -U horus_user -d horus -c "\dt"`
+#
+
+## TO DO LIST
+
+opcion1 (SNMP):
+Hay un reporsitorio maestro que posee el desarrollo de las cajas con los sensores. Estos endpoints tienen un cliente de SNMP el cual es consultado por un servidor SNMP remoto para obtener datos instantaneos.
+Se necesita un desarrollo que busca obtener datapoints similares a la simulación, pero que consulte mediante un servidor SNMP a los clientes SNMP que representan cada caja de sensores.
+
+opcion2 (HTTP): 
+Armar en un nuevo directorio codigo similar al simulador, que se usa acualmente en /edge, pero para deployar en placas esp32 y que le posteen las apis actuales del backend.

@@ -68,18 +68,6 @@ services:
       - ./frontend/grafana/dashboards:/var/lib/grafana/dashboards:ro
     restart: unless-stopped
 
-  edge_sim:
-    container_name: horus-edge-sim
-    build:
-      context: .
-      dockerfile: edge/Dockerfile
-    environment:
-      - BACKEND_URL=http://backend:8000/ingest
-      - INTERVAL=5
-    depends_on:
-      - backend
-    restart: unless-stopped
-
 volumes:
   influxdb_data:
   pgdata:

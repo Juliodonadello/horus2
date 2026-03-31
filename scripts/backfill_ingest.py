@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
 """Backfill historical voltage/current readings by posting to backend /ingest.
 
-Usage: python scripts/backfill_ingest.py --hours 24 --step 60 --sites site_001 site_002
+Usage: python scripts/backfill_ingest.py --hours 24 --step 60 --sites cordoba_capital rio_cuarto
 
 This posts one event per site per timestamp containing voltage and current readings.
 """
@@ -64,7 +64,7 @@ def parse_args():
     p.add_argument('--backend', default='http://localhost:8000/ingest', help='Backend ingest URL')
     p.add_argument('--hours', type=int, default=24, help='How many hours to backfill')
     p.add_argument('--step', type=int, default=60, help='Time step in seconds between samples')
-    p.add_argument('--sites', nargs='+', default=['site_001','site_002','site_003','site_004'])
+    p.add_argument('--sites', nargs='+', default=['cordoba_capital', 'rio_cuarto', 'villa_maria', 'san_francisco'])
     p.add_argument('--sleep', type=float, default=0.0, help='Sleep seconds between timestamp batches')
     return p.parse_args()
 

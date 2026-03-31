@@ -47,14 +47,14 @@ box(420, 120, 320, 140, 'backend/\nFastAPI /ingest\nWrites to InfluxDB + Postgre
 box(780, 60, 320, 140, 'InfluxDB\nhorus-bucket\n(timeseries)')
 box(780, 220, 320, 120, 'Postgres\nevents table')
 box(420, 320, 300, 120, 'Grafana\nprovisioning: datasources & dashboards')
-box(50, 320, 300, 120, 'tests/\nnode_simulator.py\n(simulated nodes)')
+box(50, 320, 300, 120, 'edge/\ncollector.py\n(simulated endpoints)')
 
 # Arrows
 arrow(170, 130, 420, 170)   # edge -> backend
 arrow(600, 200, 780, 120)   # backend -> influx
 arrow(600, 200, 880, 260)   # backend -> postgres
 arrow(880, 180, 600, 320)   # influx -> grafana
-arrow(200, 380, 420, 380)   # nodes -> backend
+arrow(200, 380, 420, 380)   # edge simulator -> backend
 
 OUT.parent.mkdir(parents=True, exist_ok=True)
 img.save(OUT, quality=90)

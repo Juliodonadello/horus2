@@ -4,10 +4,10 @@
       {
         "builtIn": 1,
         "datasource": {
-          "type": "influxdb",
-          "uid": "InfluxDB"
+          "type": "grafana",
+          "uid": "-- Grafana --"
         },
-        "query": "from(bucket: \"horus-bucket\")\n  |> range(start: -15m)\n  |> filter(fn: (r) => r._measurement == \"sensor_readings\" and r.type == \"voltage\" and r._field == \"value\")\n  |> filter(fn: (r) => r.site_id =~ /site_00[1-8]/)\n  |> aggregateWindow(every: 1m, fn: mean, createEmpty: false)\n  |> keep(columns: [\"_time\", \"_value\", \"site_id\"])\n  |> map(fn: (r) => ({_time: r._time, _value: r._value, site_id: r.site_id, _field: \"value\", _measurement: \"voltage\", name: r.site_id}))\n  |> group(columns: [\"site_id\"])\n",
+        "enable": true,
         "hide": true,
         "iconColor": "rgba(0, 211, 255, 1)",
         "name": "Annotations & Alerts",
@@ -15,14 +15,13 @@
       }
     ]
   },
+  "editable": true,
   "fiscalYearStartMonth": 0,
   "graphTooltip": 1,
-  "id": 1,
+  "id": 9,
   "links": [],
-  "liveNow": false,
   "panels": [
     {
-      "datasource": null,
       "fieldConfig": {
         "defaults": {},
         "overrides": []
@@ -35,14 +34,18 @@
       },
       "id": 1,
       "options": {
-        "content": "<div style=\"margin-bottom: 12px;\">\n  <div style=\"\n    font-size: 30px;\n    font-weight: 600;\n    color: #ECEFF4;\n  \">\n    📈 C4i Monitor\n  </div>\n  <div style=\"\n    font-size: 14px;\n    color: #A3A9B5;\n    margin-top: 4px;\n  \">\n    Estatus en tiempo real de los sistemas energéticos\n  </div>\n</div>",
+        "code": {
+          "language": "plaintext",
+          "showLineNumbers": false,
+          "showMiniMap": false
+        },
+        "content": "<div style=\"margin-bottom: 12px;\"><div style=\"font-size: 30px; font-weight: 600; color: #ECEFF4;\">Horus Monitor Energetico</div><div style=\"font-size: 14px; color: #A3A9B5; margin-top: 4px;\">Las agujas muestran el promedio del ultimo valor reportado por las localidades de Cordoba. Al hacer clic se abre el detalle por localidad.</div></div>",
         "mode": "html"
       },
-      "pluginVersion": "10.0.0",
-      "targets": [],
+      "pluginVersion": "11.3.0",
       "title": "",
-      "type": "text",
-      "transparent": true
+      "transparent": true,
+      "type": "text"
     },
     {
       "datasource": {
@@ -53,6 +56,584 @@
         "defaults": {
           "color": {
             "mode": "thresholds"
+          },
+          "links": [
+            {
+              "targetBlank": false,
+              "title": "Abrir detalle por localidad",
+              "url": "/d/horus-channel-detail/horus-detalle-por-localidad?orgId=1&viewPanel=10&kiosk"
+            }
+          ],
+          "mappings": [],
+          "max": 7,
+          "min": 0,
+          "thresholds": {
+            "mode": "absolute",
+            "steps": [
+              {
+                "color": "red",
+                "value": null
+              },
+              {
+                "color": "orange",
+                "value": 0.8
+              },
+              {
+                "color": "green",
+                "value": 1
+              },
+              {
+                "color": "orange",
+                "value": 4.5
+              },
+              {
+                "color": "red",
+                "value": 5
+              }
+            ]
+          },
+          "unit": "amp"
+        },
+        "overrides": []
+      },
+      "gridPos": {
+        "h": 8,
+        "w": 6,
+        "x": 0,
+        "y": 2
+      },
+      "id": 2,
+      "options": {
+        "minVizHeight": 75,
+        "minVizWidth": 75,
+        "orientation": "auto",
+        "reduceOptions": {
+          "calcs": [
+            "lastNotNull"
+          ],
+          "fields": "",
+          "values": false
+        },
+        "showThresholdLabels": false,
+        "showThresholdMarkers": true,
+        "sizing": "auto"
+      },
+      "pluginVersion": "11.3.0",
+      "targets": [
+        {
+          "datasource": {
+            "type": "influxdb",
+            "uid": "InfluxDB"
+          },
+          "format": "time_series",
+          "query": "from(bucket: \"horus-bucket\")\n  |> range(start: -15m)\n  |> filter(fn: (r) => r._measurement == \"device_telemetry\")\n  |> filter(fn: (r) => r._field == \"ch1_current\")\n  |> filter(fn: (r) => r.site_id =~ /^(cordoba_capital|villa_carlos_paz|rio_cuarto|villa_maria|san_francisco|alta_gracia|jesus_maria|bell_ville)$/)\n  |> group(columns: [\"device_id\"])\n  |> last()\n  |> group()\n  |> mean()",
+          "refId": "A"
+        }
+      ],
+      "title": "Corriente continua promedio",
+      "type": "gauge"
+    },
+    {
+      "datasource": {
+        "type": "influxdb",
+        "uid": "InfluxDB"
+      },
+      "fieldConfig": {
+        "defaults": {
+          "color": {
+            "mode": "thresholds"
+          },
+          "links": [
+            {
+              "targetBlank": false,
+              "title": "Abrir detalle por localidad",
+              "url": "/d/horus-channel-detail/horus-detalle-por-localidad?orgId=1&viewPanel=11&kiosk"
+            }
+          ],
+          "mappings": [],
+          "max": 5,
+          "min": 0,
+          "thresholds": {
+            "mode": "absolute",
+            "steps": [
+              {
+                "color": "red",
+                "value": null
+              },
+              {
+                "color": "orange",
+                "value": 0.4
+              },
+              {
+                "color": "green",
+                "value": 0.5
+              },
+              {
+                "color": "orange",
+                "value": 3.5
+              },
+              {
+                "color": "red",
+                "value": 4
+              }
+            ]
+          },
+          "unit": "amp"
+        },
+        "overrides": []
+      },
+      "gridPos": {
+        "h": 8,
+        "w": 6,
+        "x": 6,
+        "y": 2
+      },
+      "id": 3,
+      "options": {
+        "minVizHeight": 75,
+        "minVizWidth": 75,
+        "orientation": "auto",
+        "reduceOptions": {
+          "calcs": [
+            "lastNotNull"
+          ],
+          "fields": "",
+          "values": false
+        },
+        "showThresholdLabels": false,
+        "showThresholdMarkers": true,
+        "sizing": "auto"
+      },
+      "pluginVersion": "11.3.0",
+      "targets": [
+        {
+          "datasource": {
+            "type": "influxdb",
+            "uid": "InfluxDB"
+          },
+          "format": "time_series",
+          "query": "from(bucket: \"horus-bucket\")\n  |> range(start: -15m)\n  |> filter(fn: (r) => r._measurement == \"device_telemetry\")\n  |> filter(fn: (r) => r._field == \"ch2_current\")\n  |> filter(fn: (r) => r.site_id =~ /^(cordoba_capital|villa_carlos_paz|rio_cuarto|villa_maria|san_francisco|alta_gracia|jesus_maria|bell_ville)$/)\n  |> group(columns: [\"device_id\"])\n  |> last()\n  |> group()\n  |> mean()",
+          "refId": "A"
+        }
+      ],
+      "title": "Corriente alterna promedio",
+      "type": "gauge"
+    },
+    {
+      "datasource": {
+        "type": "influxdb",
+        "uid": "InfluxDB"
+      },
+      "fieldConfig": {
+        "defaults": {
+          "color": {
+            "mode": "thresholds"
+          },
+          "links": [
+            {
+              "targetBlank": false,
+              "title": "Abrir detalle por localidad",
+              "url": "/d/horus-channel-detail/horus-detalle-por-localidad?orgId=1&viewPanel=12&kiosk"
+            }
+          ],
+          "mappings": [],
+          "max": 53,
+          "min": 45,
+          "thresholds": {
+            "mode": "absolute",
+            "steps": [
+              {
+                "color": "red",
+                "value": null
+              },
+              {
+                "color": "orange",
+                "value": 46.5
+              },
+              {
+                "color": "green",
+                "value": 47
+              },
+              {
+                "color": "orange",
+                "value": 49.5
+              },
+              {
+                "color": "red",
+                "value": 50
+              }
+            ]
+          },
+          "unit": "volt"
+        },
+        "overrides": []
+      },
+      "gridPos": {
+        "h": 8,
+        "w": 6,
+        "x": 12,
+        "y": 2
+      },
+      "id": 4,
+      "options": {
+        "minVizHeight": 75,
+        "minVizWidth": 75,
+        "orientation": "auto",
+        "reduceOptions": {
+          "calcs": [
+            "lastNotNull"
+          ],
+          "fields": "",
+          "values": false
+        },
+        "showThresholdLabels": false,
+        "showThresholdMarkers": true,
+        "sizing": "auto"
+      },
+      "pluginVersion": "11.3.0",
+      "targets": [
+        {
+          "datasource": {
+            "type": "influxdb",
+            "uid": "InfluxDB"
+          },
+          "format": "time_series",
+          "query": "from(bucket: \"horus-bucket\")\n  |> range(start: -15m)\n  |> filter(fn: (r) => r._measurement == \"device_telemetry\")\n  |> filter(fn: (r) => r._field == \"ch3_voltage\")\n  |> filter(fn: (r) => r.site_id =~ /^(cordoba_capital|villa_carlos_paz|rio_cuarto|villa_maria|san_francisco|alta_gracia|jesus_maria|bell_ville)$/)\n  |> group(columns: [\"device_id\"])\n  |> last()\n  |> group()\n  |> mean()",
+          "refId": "A"
+        }
+      ],
+      "title": "Voltaje continuo promedio",
+      "type": "gauge"
+    },
+    {
+      "datasource": {
+        "type": "influxdb",
+        "uid": "InfluxDB"
+      },
+      "fieldConfig": {
+        "defaults": {
+          "color": {
+            "mode": "thresholds"
+          },
+          "links": [
+            {
+              "targetBlank": false,
+              "title": "Abrir detalle por localidad",
+              "url": "/d/horus-channel-detail/horus-detalle-por-localidad?orgId=1&viewPanel=13&kiosk"
+            }
+          ],
+          "mappings": [],
+          "max": 240,
+          "min": 190,
+          "thresholds": {
+            "mode": "absolute",
+            "steps": [
+              {
+                "color": "red",
+                "value": null
+              },
+              {
+                "color": "orange",
+                "value": 195
+              },
+              {
+                "color": "green",
+                "value": 200
+              },
+              {
+                "color": "orange",
+                "value": 225
+              },
+              {
+                "color": "red",
+                "value": 230
+              }
+            ]
+          },
+          "unit": "volt"
+        },
+        "overrides": []
+      },
+      "gridPos": {
+        "h": 8,
+        "w": 6,
+        "x": 18,
+        "y": 2
+      },
+      "id": 5,
+      "options": {
+        "minVizHeight": 75,
+        "minVizWidth": 75,
+        "orientation": "auto",
+        "reduceOptions": {
+          "calcs": [
+            "lastNotNull"
+          ],
+          "fields": "",
+          "values": false
+        },
+        "showThresholdLabels": false,
+        "showThresholdMarkers": true,
+        "sizing": "auto",
+        "text": {
+          "titleSize": 1
+        }
+      },
+      "pluginVersion": "11.3.0",
+      "targets": [
+        {
+          "datasource": {
+            "type": "influxdb",
+            "uid": "InfluxDB"
+          },
+          "format": "time_series",
+          "query": "from(bucket: \"horus-bucket\")\n  |> range(start: -15m)\n  |> filter(fn: (r) => r._measurement == \"device_telemetry\")\n  |> filter(fn: (r) => r._field == \"ch4_voltage\")\n  |> filter(fn: (r) => r.site_id =~ /^(cordoba_capital|villa_carlos_paz|rio_cuarto|villa_maria|san_francisco|alta_gracia|jesus_maria|bell_ville)$/)\n  |> group(columns: [\"device_id\"])\n  |> last()\n  |> group()\n  |> mean()",
+          "refId": "A"
+        }
+      ],
+      "title": "Voltaje alterno promedio",
+      "type": "gauge"
+    },
+    {
+      "datasource": {
+        "type": "influxdb",
+        "uid": "InfluxDB"
+      },
+      "fieldConfig": {
+        "defaults": {
+          "color": {
+            "mode": "palette-classic"
+          },
+          "custom": {
+            "axisBorderShow": false,
+            "axisCenteredZero": false,
+            "axisColorMode": "text",
+            "axisLabel": "Current DC (A)",
+            "axisPlacement": "auto",
+            "barAlignment": 0,
+            "barWidthFactor": 0.6,
+            "drawStyle": "line",
+            "fillOpacity": 12,
+            "gradientMode": "none",
+            "hideFrom": {
+              "legend": false,
+              "tooltip": false,
+              "viz": false
+            },
+            "insertNulls": false,
+            "lineInterpolation": "linear",
+            "lineWidth": 2,
+            "pointSize": 4,
+            "scaleDistribution": {
+              "type": "linear"
+            },
+            "showPoints": "auto",
+            "spanNulls": false,
+            "stacking": {
+              "group": "A",
+              "mode": "none"
+            },
+            "thresholdsStyle": {
+              "mode": "off"
+            }
+          },
+          "mappings": [],
+          "thresholds": {
+            "mode": "absolute",
+            "steps": [
+              {
+                "color": "green",
+                "value": null
+              },
+              {
+                "color": "red",
+                "value": 80
+              }
+            ]
+          },
+          "unit": "amp"
+        },
+        "overrides": []
+      },
+      "gridPos": {
+        "h": 12,
+        "w": 12,
+        "x": 0,
+        "y": 10
+      },
+      "id": 6,
+      "options": {
+        "legend": {
+          "calcs": [
+            "lastNotNull",
+            "max",
+            "min"
+          ],
+          "displayMode": "table",
+          "placement": "bottom",
+          "showLegend": true
+        },
+        "tooltip": {
+          "mode": "multi",
+          "sort": "none"
+        }
+      },
+      "pluginVersion": "11.3.0",
+      "targets": [
+        {
+          "datasource": {
+            "type": "influxdb",
+            "uid": "InfluxDB"
+          },
+          "format": "time_series",
+          "query": "from(bucket: \"horus-bucket\")\n  |> range(start: v.timeRangeStart, stop: v.timeRangeStop)\n  |> filter(fn: (r) => r._measurement == \"device_telemetry\")\n  |> filter(fn: (r) => r._field == \"ch1_current\")\n  |> filter(fn: (r) => r.site_id =~ /^(cordoba_capital|villa_carlos_paz|rio_cuarto|villa_maria|san_francisco|alta_gracia|jesus_maria|bell_ville)$/)\n  |> map(fn: (r) => ({_time: r._time, _value: r._value, _field: r.device_id}))\n  |> keep(columns: [\"_time\", \"_value\", \"_field\"])\n  |> group(columns: [\"_field\"])",
+          "refId": "A"
+        }
+      ],
+      "title": "Historico de corriente continua",
+      "type": "timeseries"
+    },
+    {
+      "datasource": {
+        "type": "influxdb",
+        "uid": "InfluxDB"
+      },
+      "fieldConfig": {
+        "defaults": {
+          "color": {
+            "mode": "palette-classic"
+          },
+          "custom": {
+            "axisBorderShow": false,
+            "axisCenteredZero": false,
+            "axisColorMode": "text",
+            "axisLabel": "Current AC (A)",
+            "axisPlacement": "auto",
+            "barAlignment": 0,
+            "barWidthFactor": 0.6,
+            "drawStyle": "line",
+            "fillOpacity": 12,
+            "gradientMode": "none",
+            "hideFrom": {
+              "legend": false,
+              "tooltip": false,
+              "viz": false
+            },
+            "insertNulls": false,
+            "lineInterpolation": "linear",
+            "lineWidth": 2,
+            "pointSize": 4,
+            "scaleDistribution": {
+              "type": "linear"
+            },
+            "showPoints": "auto",
+            "spanNulls": false,
+            "stacking": {
+              "group": "A",
+              "mode": "none"
+            },
+            "thresholdsStyle": {
+              "mode": "off"
+            }
+          },
+          "mappings": [],
+          "thresholds": {
+            "mode": "absolute",
+            "steps": [
+              {
+                "color": "green",
+                "value": null
+              },
+              {
+                "color": "red",
+                "value": 80
+              }
+            ]
+          },
+          "unit": "amp"
+        },
+        "overrides": []
+      },
+      "gridPos": {
+        "h": 12,
+        "w": 12,
+        "x": 12,
+        "y": 10
+      },
+      "id": 7,
+      "options": {
+        "legend": {
+          "calcs": [
+            "lastNotNull",
+            "max",
+            "min"
+          ],
+          "displayMode": "table",
+          "placement": "bottom",
+          "showLegend": true
+        },
+        "tooltip": {
+          "mode": "multi",
+          "sort": "none"
+        }
+      },
+      "pluginVersion": "11.3.0",
+      "targets": [
+        {
+          "datasource": {
+            "type": "influxdb",
+            "uid": "InfluxDB"
+          },
+          "format": "time_series",
+          "query": "from(bucket: \"horus-bucket\")\n  |> range(start: v.timeRangeStart, stop: v.timeRangeStop)\n  |> filter(fn: (r) => r._measurement == \"device_telemetry\")\n  |> filter(fn: (r) => r._field == \"ch2_current\")\n  |> filter(fn: (r) => r.site_id =~ /^(cordoba_capital|villa_carlos_paz|rio_cuarto|villa_maria|san_francisco|alta_gracia|jesus_maria|bell_ville)$/)\n  |> map(fn: (r) => ({_time: r._time, _value: r._value, _field: r.device_id}))\n  |> keep(columns: [\"_time\", \"_value\", \"_field\"])\n  |> group(columns: [\"_field\"])",
+          "refId": "A"
+        }
+      ],
+      "title": "Historico de corriente alterna",
+      "type": "timeseries"
+    },
+    {
+      "datasource": {
+        "type": "influxdb",
+        "uid": "InfluxDB"
+      },
+      "fieldConfig": {
+        "defaults": {
+          "color": {
+            "mode": "palette-classic"
+          },
+          "custom": {
+            "axisBorderShow": false,
+            "axisCenteredZero": false,
+            "axisColorMode": "text",
+            "axisLabel": "Voltage DC (V)",
+            "axisPlacement": "auto",
+            "barAlignment": 0,
+            "barWidthFactor": 0.6,
+            "drawStyle": "line",
+            "fillOpacity": 12,
+            "gradientMode": "none",
+            "hideFrom": {
+              "legend": false,
+              "tooltip": false,
+              "viz": false
+            },
+            "insertNulls": false,
+            "lineInterpolation": "linear",
+            "lineWidth": 2,
+            "pointSize": 4,
+            "scaleDistribution": {
+              "type": "linear"
+            },
+            "showPoints": "auto",
+            "spanNulls": false,
+            "stacking": {
+              "group": "A",
+              "mode": "none"
+            },
+            "thresholdsStyle": {
+              "mode": "off"
+            }
           },
           "mappings": [],
           "thresholds": {
@@ -73,44 +654,42 @@
         "overrides": []
       },
       "gridPos": {
-        "h": 8,
-        "w": 6,
+        "h": 12,
+        "w": 12,
         "x": 0,
-        "y": 2
+        "y": 22
       },
-      "id": 2,
+      "id": 8,
       "options": {
-        "orientation": "auto",
-        "reduceOptions": {
-          "values": false,
-          "fields": "",
-          "calcs": ["lastNotNull"]
+        "legend": {
+          "calcs": [
+            "lastNotNull",
+            "max",
+            "min"
+          ],
+          "displayMode": "table",
+          "placement": "bottom",
+          "showLegend": true
         },
-        "showThresholdLabels": false,
-        "showThresholdMarkers": true,
-        "text": {}
+        "tooltip": {
+          "mode": "multi",
+          "sort": "none"
+        }
       },
-      "pluginVersion": "10.0.0",
+      "pluginVersion": "11.3.0",
       "targets": [
         {
-          "refId": "A",
           "datasource": {
             "type": "influxdb",
             "uid": "InfluxDB"
           },
-          "query": "from(bucket: "horus-bucket")
-  |> range(start: -15m)
-  |> filter(fn: (r) => r._measurement == "sensor_readings" and r.type == "voltage" and r._field == "value")
-  |> filter(fn: (r) => r.site_id =~ /site_00[1-8]/)
-  |> last()
-  |> map(fn: (r) => ({_time: r._time, _value: r._value, _field: r.site_id, _measurement: "voltage", site_id: r.site_id, name: r.site_id}))
-  |> keep(columns: ["_time", "_value", "_field"])
-  |> group(columns: ["_field"])",
-          "format": "time_series"
+          "format": "time_series",
+          "query": "from(bucket: \"horus-bucket\")\n  |> range(start: v.timeRangeStart, stop: v.timeRangeStop)\n  |> filter(fn: (r) => r._measurement == \"device_telemetry\")\n  |> filter(fn: (r) => r._field == \"ch3_voltage\")\n  |> filter(fn: (r) => r.site_id =~ /^(cordoba_capital|villa_carlos_paz|rio_cuarto|villa_maria|san_francisco|alta_gracia|jesus_maria|bell_ville)$/)\n  |> map(fn: (r) => ({_time: r._time, _value: r._value, _field: r.device_id}))\n  |> keep(columns: [\"_time\", \"_value\", \"_field\"])\n  |> group(columns: [\"_field\"])",
+          "refId": "A"
         }
       ],
-      "title": "Latest Voltage",
-      "type": "gauge"
+      "title": "Historico de voltaje continuo",
+      "type": "timeseries"
     },
     {
       "datasource": {
@@ -120,7 +699,40 @@
       "fieldConfig": {
         "defaults": {
           "color": {
-            "mode": "thresholds"
+            "mode": "palette-classic"
+          },
+          "custom": {
+            "axisBorderShow": false,
+            "axisCenteredZero": false,
+            "axisColorMode": "text",
+            "axisLabel": "Voltage AC (V)",
+            "axisPlacement": "auto",
+            "barAlignment": 0,
+            "barWidthFactor": 0.6,
+            "drawStyle": "line",
+            "fillOpacity": 12,
+            "gradientMode": "none",
+            "hideFrom": {
+              "legend": false,
+              "tooltip": false,
+              "viz": false
+            },
+            "insertNulls": false,
+            "lineInterpolation": "linear",
+            "lineWidth": 2,
+            "pointSize": 4,
+            "scaleDistribution": {
+              "type": "linear"
+            },
+            "showPoints": "auto",
+            "spanNulls": false,
+            "stacking": {
+              "group": "A",
+              "mode": "none"
+            },
+            "thresholdsStyle": {
+              "mode": "off"
+            }
           },
           "mappings": [],
           "thresholds": {
@@ -132,94 +744,7 @@
               },
               {
                 "color": "red",
-                "value": 10
-              }
-            ]
-          },
-          "unit": "amp"
-        },
-        "overrides": []
-      },
-      "gridPos": {
-        "h": 8,
-        "w": 6,
-        "x": 6,
-        "y": 2
-      },
-      "id": 3,
-      "options": {
-        "orientation": "auto",
-        "reduceOptions": {
-          "values": false,
-          "fields": "",
-          "calcs": ["lastNotNull"]
-        },
-        "showThresholdLabels": false,
-        "showThresholdMarkers": true,
-        "text": {}
-      },
-      "pluginVersion": "10.0.0",
-      "targets": [
-        {
-          "refId": "A",
-          "datasource": {
-            "type": "influxdb",
-            "uid": "InfluxDB"
-          },
-          "query": "from(bucket: \"horus-bucket\")\n  |> range(start: -15m)\n  |> filter(fn: (r) => r._measurement == \"sensor_readings\" and r.type == \"current\" and r._field == \"value\")\n  |> filter(fn: (r) => r.site_id =~ /site_00[1-8]/)\n  |> last()\n  |> map(fn: (r) => ({_time: r._time, _value: r._value, _field: r.site_id, _measurement: \"current\", site_id: r.site_id, name: r.site_id}))\n  |> keep(columns: [\"_time\", \"_value\", \"_field\"])\n  |> group(columns: [\"_field\"])",
-          "format": "time_series"
-        }
-      ],
-      "title": "Latest Current",
-      "type": "gauge"
-    },
-    {
-      "datasource": {
-        "type": "influxdb",
-        "uid": "InfluxDB"
-      },
-      "fieldConfig": {
-        "defaults": {
-          "color": {
-            "mode": "palette-classic"
-          },
-          "custom": {
-            "axisCenteredZero": false,
-            "axisColorMode": "text",
-            "axisLabel": "Voltage (V)",
-            "axisPlacement": "auto",
-            "barAlignment": 0,
-            "drawStyle": "line",
-            "fillOpacity": 10,
-            "gradientMode": "none",
-            "hideFrom": {
-              "tooltip": false,
-              "viz": false,
-              "legend": false
-            },
-            "lineInterpolation": "linear",
-            "lineWidth": 2,
-            "pointSize": 5,
-            "scaleDistribution": {
-              "type": "linear"
-            },
-            "showPoints": "auto",
-            "spanNulls": false,
-            "stacking": {
-              "group": "A",
-              "mode": "none"
-            },
-            "thresholdsStyle": {
-              "mode": "off"
-            }
-          },
-          "mappings": [],
-          "thresholds": {
-            "mode": "absolute",
-            "steps": [
-              {
-                "color": "green",
-                "value": null
+                "value": 80
               }
             ]
           },
@@ -228,15 +753,19 @@
         "overrides": []
       },
       "gridPos": {
-        "h": 8,
+        "h": 12,
         "w": 12,
         "x": 12,
-        "y": 2
+        "y": 22
       },
-      "id": 4,
+      "id": 9,
       "options": {
         "legend": {
-          "calcs": ["mean", "max", "min"],
+          "calcs": [
+            "lastNotNull",
+            "max",
+            "min"
+          ],
           "displayMode": "table",
           "placement": "bottom",
           "showLegend": true
@@ -246,18 +775,19 @@
           "sort": "none"
         }
       },
+      "pluginVersion": "11.3.0",
       "targets": [
         {
-          "refId": "A",
           "datasource": {
             "type": "influxdb",
             "uid": "InfluxDB"
           },
-          "query": "from(bucket: \"horus-bucket\")\n  |> range(start: v.timeRangeStart, stop: v.timeRangeStop)\n  |> filter(fn: (r) => r[\"_measurement\"] == \"sensor_readings\")\n  |> filter(fn: (r) => r[\"_field\"] == \"value\")\n  |> filter(fn: (r) => r[\"sensor\"] == \"voltage_site_001\" or r[\"sensor\"] == \"voltage_site_002\" or r[\"sensor\"] == \"voltage_site_003\" or r[\"sensor\"] == \"voltage_site_004\" or r[\"sensor\"] == \"voltage_site_005\" or r[\"sensor\"] == \"voltage_site_006\" or r[\"sensor\"] == \"voltage_site_007\" or r[\"sensor\"] == \"voltage_site_008\")\n  |> filter(fn: (r) => r[\"site_id\"] == \"site_001\" or r[\"site_id\"] == \"site_002\" or r[\"site_id\"] == \"site_003\" or r[\"site_id\"] == \"site_004\" or r[\"site_id\"] == \"site_005\" or r[\"site_id\"] == \"site_006\" or r[\"site_id\"] == \"site_007\" or r[\"site_id\"] == \"site_008\")\n  |> filter(fn: (r) => r[\"type\"] == \"voltage\")\n  |> aggregateWindow(every: v.windowPeriod, fn: last, createEmpty: false)\n  |> map(fn: (r) => ({ r with _field: r.site_id }))\n  |> keep(columns: [\"_time\", \"_value\", \"_field\"])\n  |> group(columns: [\"_field\"])",
-          "format": "time_series"
+          "format": "time_series",
+          "query": "from(bucket: \"horus-bucket\")\n  |> range(start: v.timeRangeStart, stop: v.timeRangeStop)\n  |> filter(fn: (r) => r._measurement == \"device_telemetry\")\n  |> filter(fn: (r) => r._field == \"ch4_voltage\")\n  |> filter(fn: (r) => r.site_id =~ /^(cordoba_capital|villa_carlos_paz|rio_cuarto|villa_maria|san_francisco|alta_gracia|jesus_maria|bell_ville)$/)\n  |> map(fn: (r) => ({_time: r._time, _value: r._value, _field: r.device_id}))\n  |> keep(columns: [\"_time\", \"_value\", \"_field\"])\n  |> group(columns: [\"_field\"])",
+          "refId": "A"
         }
       ],
-      "title": "Voltage Over Time",
+      "title": "Historico de voltaje alterno",
       "type": "timeseries"
     },
     {
@@ -271,112 +801,14 @@
             "mode": "palette-classic"
           },
           "custom": {
-            "axisCenteredZero": false,
-            "axisColorMode": "text",
-            "axisLabel": "Current (A)",
+            "axisLabel": "Power DC (W)",
             "axisPlacement": "auto",
-            "barAlignment": 0,
             "drawStyle": "line",
-            "fillOpacity": 10,
-            "gradientMode": "none",
-            "hideFrom": {
-              "tooltip": false,
-              "viz": false,
-              "legend": false
-            },
-            "lineInterpolation": "linear",
-            "lineWidth": 2,
-            "pointSize": 5,
-            "scaleDistribution": {
-              "type": "linear"
-            },
-            "showPoints": "auto",
-            "spanNulls": false,
-            "stacking": {
-              "group": "A",
-              "mode": "none"
-            },
-            "thresholdsStyle": {
-              "mode": "off"
-            }
-          },
-          "mappings": [],
-          "thresholds": {
-            "mode": "absolute",
-            "steps": [
-              {
-                "color": "green",
-                "value": null
-              }
-            ]
-          },
-          "unit": "amp"
-        },
-        "overrides": []
-      },
-      "gridPos": {
-        "h": 8,
-        "w": 12,
-        "x": 0,
-        "y": 10
-      },
-      "id": 5,
-      "options": {
-        "legend": {
-          "calcs": ["mean", "max", "min"],
-          "displayMode": "table",
-          "placement": "bottom",
-          "showLegend": true
-        },
-        "tooltip": {
-          "mode": "multi",
-          "sort": "none"
-        }
-      },
-      "targets": [
-        {
-          "refId": "A",
-          "datasource": {
-            "type": "influxdb",
-            "uid": "InfluxDB"
-          },
-          "query": "from(bucket: \"horus-bucket\")\n  |> range(start: v.timeRangeStart, stop: v.timeRangeStop)\n  |> filter(fn: (r) => r[\"_measurement\"] == \"sensor_readings\")\n  |> filter(fn: (r) => r[\"_field\"] == \"value\")\n  |> filter(fn: (r) => r[\"sensor\"] == \"current_site_001\" or r[\"sensor\"] == \"current_site_002\" or r[\"sensor\"] == \"current_site_003\" or r[\"sensor\"] == \"current_site_004\" or r[\"sensor\"] == \"current_site_005\" or r[\"sensor\"] == \"current_site_006\" or r[\"sensor\"] == \"current_site_007\" or r[\"sensor\"] == \"current_site_008\")\n  |> filter(fn: (r) => r[\"site_id\"] == \"site_001\" or r[\"site_id\"] == \"site_002\" or r[\"site_id\"] == \"site_003\" or r[\"site_id\"] == \"site_004\" or r[\"site_id\"] == \"site_005\" or r[\"site_id\"] == \"site_006\" or r[\"site_id\"] == \"site_007\" or r[\"site_id\"] == \"site_008\")\n  |> filter(fn: (r) => r[\"type\"] == \"current\")\n  |> aggregateWindow(every: v.windowPeriod, fn: last, createEmpty: false)\n  |> map(fn: (r) => ({ r with _field: r.site_id }))\n  |> keep(columns: [\"_time\", \"_value\", \"_field\"])\n  |> group(columns: [\"_field\"])",
-          "format": "time_series"
-        }
-      ],
-      "title": "Current Over Time",
-      "type": "timeseries"
-    },
-    {
-      "datasource": {
-        "type": "influxdb",
-        "uid": "InfluxDB"
-      },
-      "fieldConfig": {
-        "defaults": {
-          "color": {
-            "mode": "palette-classic"
-          },
-          "custom": {
-            "axisCenteredZero": false,
-            "axisColorMode": "text",
-            "axisLabel": "Power (W)",
-            "axisPlacement": "auto",
-            "barAlignment": 0,
-            "drawStyle": "line",
-            "fillOpacity": 10,
+            "fillOpacity": 12,
             "gradientMode": "opacity",
-            "hideFrom": {
-              "tooltip": false,
-              "viz": false,
-              "legend": false
-            },
             "lineInterpolation": "linear",
             "lineWidth": 2,
-            "pointSize": 5,
-            "scaleDistribution": {
-              "type": "linear"
-            },
+            "pointSize": 4,
             "showPoints": "auto",
             "spanNulls": false,
             "stacking": {
@@ -386,31 +818,25 @@
             "thresholdsStyle": {
               "mode": "off"
             }
-          },
-          "mappings": [],
-          "thresholds": {
-            "mode": "absolute",
-            "steps": [
-              {
-                "color": "green",
-                "value": null
-              }
-            ]
           },
           "unit": "watt"
         },
         "overrides": []
       },
       "gridPos": {
-        "h": 8,
+        "h": 12,
         "w": 12,
-        "x": 12,
-        "y": 10
+        "x": 0,
+        "y": 34
       },
-      "id": 6,
+      "id": 10,
       "options": {
         "legend": {
-          "calcs": ["mean", "max", "min"],
+          "calcs": [
+            "lastNotNull",
+            "max",
+            "min"
+          ],
           "displayMode": "table",
           "placement": "bottom",
           "showLegend": true
@@ -420,101 +846,111 @@
           "sort": "none"
         }
       },
+      "pluginVersion": "11.3.0",
       "targets": [
         {
-          "refId": "A",
           "datasource": {
             "type": "influxdb",
             "uid": "InfluxDB"
           },
-          "query": "v = from(bucket: \"horus-bucket\")\n  |> range(start: -1h)\n  |> filter(fn: (r) => r._measurement == \"sensor_readings\" and r.type == \"voltage\")\n  |> filter(fn: (r) => r._field == \"value\")\n  |> filter(fn: (r) => r.site_id =~ /site_00[1-8]/)\n  |> aggregateWindow(every: 1m, fn: mean, createEmpty: false)\n  |> rename(columns: {_value: \"voltage\"})\n\nc = from(bucket: \"horus-bucket\")\n  |> range(start: -1h)\n  |> filter(fn: (r) => r._measurement == \"sensor_readings\" and r.type == \"current\")\n  |> filter(fn: (r) => r._field == \"value\")\n  |> filter(fn: (r) => r.site_id =~ /site_00[1-8]/)\n  |> aggregateWindow(every: 1m, fn: mean, createEmpty: false)\n  |> rename(columns: {_value: \"current\"})\n\njoin(tables: {v:v, c:c}, on: [\"_time\", \"site_id\"])\n  |> map(fn: (r) => ({_time: r._time, _value: r.voltage * r.current, _measurement: \"power\", site_id: r.site_id, _field: r.site_id}))\n  |> keep(columns: [\"_time\", \"_value\", \"_field\"])\n  |> group(columns: [\"_field\"])",
-          "format": "time_series"
+          "format": "time_series",
+          "query": "from(bucket: \"horus-bucket\")\n  |> range(start: v.timeRangeStart, stop: v.timeRangeStop)\n  |> filter(fn: (r) => r._measurement == \"device_telemetry\")\n  |> filter(fn: (r) => r._field == \"ch1_current\" or r._field == \"ch3_voltage\")\n  |> filter(fn: (r) => r.site_id =~ /^(cordoba_capital|villa_carlos_paz|rio_cuarto|villa_maria|san_francisco|alta_gracia|jesus_maria|bell_ville)$/)\n  |> pivot(rowKey: [\"_time\", \"device_id\"], columnKey: [\"_field\"], valueColumn: \"_value\")\n  |> map(fn: (r) => ({_time: r._time, _value: r.ch1_current * r.ch3_voltage, _field: r.device_id}))\n  |> keep(columns: [\"_time\", \"_value\", \"_field\"])\n  |> group(columns: [\"_field\"])",
+          "refId": "A"
         }
       ],
-      "title": "Estimated Power (W)",
+      "title": "Historico de potencia continua",
       "type": "timeseries"
     },
     {
       "datasource": {
-        "type": "postgres",
-        "uid": "PostgreSQL"
+        "type": "influxdb",
+        "uid": "InfluxDB"
       },
       "fieldConfig": {
         "defaults": {
           "color": {
-            "mode": "fixed"
+            "mode": "palette-classic"
           },
           "custom": {
-            "align": "left",
-            "cellOptions": {
-              "type": "json-view"
+            "axisLabel": "Power AC (W)",
+            "axisPlacement": "auto",
+            "drawStyle": "line",
+            "fillOpacity": 12,
+            "gradientMode": "opacity",
+            "lineInterpolation": "linear",
+            "lineWidth": 2,
+            "pointSize": 4,
+            "showPoints": "auto",
+            "spanNulls": false,
+            "stacking": {
+              "group": "A",
+              "mode": "none"
             },
-            "inspect": false
+            "thresholdsStyle": {
+              "mode": "off"
+            }
           },
-          "mappings": [],
-          "thresholds": {
-            "mode": "absolute",
-            "steps": [
-              {
-                "color": "green",
-                "value": null
-              }
-            ]
-          }
+          "unit": "watt"
         },
         "overrides": []
       },
       "gridPos": {
-        "h": 8,
-        "w": 24,
-        "x": 0,
-        "y": 18
+        "h": 12,
+        "w": 12,
+        "x": 12,
+        "y": 34
       },
-      "id": 7,
+      "id": 11,
       "options": {
-        "footer": {
-          "countRows": false,
-          "fields": "",
-          "reducer": ["sum"],
-          "show": false
+        "legend": {
+          "calcs": [
+            "lastNotNull",
+            "max",
+            "min"
+          ],
+          "displayMode": "table",
+          "placement": "bottom",
+          "showLegend": true
         },
-        "showHeader": true,
-        "sortBy": [
-          {
-            "displayName": "ts",
-            "desc": true
-          }
-        ]
+        "tooltip": {
+          "mode": "multi",
+          "sort": "none"
+        }
       },
-      "pluginVersion": "10.0.0",
+      "pluginVersion": "11.3.0",
       "targets": [
         {
-          "refId": "A",
           "datasource": {
-            "type": "postgres",
-            "uid": "PostgreSQL"
+            "type": "influxdb",
+            "uid": "InfluxDB"
           },
-          "rawSql": "SELECT id, site_id, ts, readings FROM events ORDER BY ts DESC LIMIT 100",
-          "format": "table"
+          "format": "time_series",
+          "query": "from(bucket: \"horus-bucket\")\n  |> range(start: v.timeRangeStart, stop: v.timeRangeStop)\n  |> filter(fn: (r) => r._measurement == \"device_telemetry\")\n  |> filter(fn: (r) => r._field == \"ch2_current\" or r._field == \"ch4_voltage\")\n  |> filter(fn: (r) => r.site_id =~ /^(cordoba_capital|villa_carlos_paz|rio_cuarto|villa_maria|san_francisco|alta_gracia|jesus_maria|bell_ville)$/)\n  |> pivot(rowKey: [\"_time\", \"device_id\"], columnKey: [\"_field\"], valueColumn: \"_value\")\n  |> map(fn: (r) => ({_time: r._time, _value: r.ch2_current * r.ch4_voltage, _field: r.device_id}))\n  |> keep(columns: [\"_time\", \"_value\", \"_field\"])\n  |> group(columns: [\"_field\"])",
+          "refId": "A"
         }
       ],
-      "title": "Recent Events (PostgreSQL)",
-      "type": "table"
+      "title": "Historico de potencia alterna",
+      "type": "timeseries"
     }
   ],
+  "preload": false,
   "refresh": "5s",
-  "schemaVersion": 36,
-  "style": "dark",
-  "tags": ["horus", "power"],
+  "schemaVersion": 40,
+  "tags": [
+    "horus",
+    "telemetry"
+  ],
   "templating": {
     "list": []
   },
   "time": {
-    "from": "now-15m",
+    "from": "now-3h",
     "to": "now"
   },
   "timepicker": {},
-  "title": "C4i Monitor",
+  "timezone": "",
+  "title": "Horus Monitor Energetico",
   "uid": "horus-power-monitor",
-  "version": 2
+  "version": 4,
+  "weekStart": ""
 }

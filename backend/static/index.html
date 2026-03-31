@@ -9,44 +9,43 @@
   <body>
     <header>
       <h1>Horus Control Center</h1>
-      <p>Grafana embebido + simulaciones avanzadas bajo demanda.</p>
     </header>
 
     <main>
-      <section class="controls">
-        <h2>Laboratorio de simulaciones</h2>
-        <div class="form-grid">
-          <label>Escenario
-            <select id="scenarioSelect"></select>
-          </label>
-          <label>Site ID
-            <input id="siteId" value="site_010" />
-          </label>
-          <label>Duración (s)
-            <input id="duration" type="number" min="10" value="120" />
-          </label>
-          <label>Intervalo (s)
-            <input id="interval" type="number" min="1" step="0.5" value="2" />
-          </label>
+      <details class="dashboard-shell operational-shell" open>
+        <summary>Dashboard operacional</summary>
+        <div class="frame-wrap">
+          <iframe
+            class="dashboard-frame dashboard-frame-operational"
+            src=""
+            data-grafana-path="/d/horus-power-monitor/c4i-monitor?orgId=1&kiosk"
+            title="Grafana Power Dashboard"
+            loading="lazy"
+          ></iframe>
         </div>
-        <button id="startBtn">Iniciar simulación</button>
-      </section>
+      </details>
 
-      <section class="runs">
-        <h2>Ejecuciones activas</h2>
-        <div id="runList" class="run-list"></div>
-      </section>
-
-      <section class="grafana">
-        <h2>Dashboard operacional (Grafana embebido)</h2>
-        <iframe
-          src="http://localhost:3000/d/horus-power-monitor/c4i-monitor?orgId=1&kiosk"
-          title="Grafana Dashboard"
-          loading="lazy"
-        ></iframe>
+      <section class="dashboard-shell alarm-shell">
+        <div class="section-head">
+          <h2>Dashboard de alarmas</h2>
+          <a class="download-link" href="/alarms/export.csv">Descargar historico de alarmas</a>
+        </div>
+        <div class="frame-wrap">
+          <iframe
+            class="dashboard-frame dashboard-frame-alarms"
+            src=""
+            data-grafana-path="/d/horus-alarms-monitor/horus-alarmas?orgId=1&kiosk"
+            title="Grafana Alarm Dashboard"
+            loading="lazy"
+          ></iframe>
+        </div>
       </section>
     </main>
-
-    <script src="/app/app.js"></script>
+    <script>
+      const grafanaBaseUrl = `${window.location.protocol}//${window.location.hostname}:3000`;
+      document.querySelectorAll("iframe[data-grafana-path]").forEach((frame) => {
+        frame.src = `${grafanaBaseUrl}${frame.dataset.grafanaPath}`;
+      });
+    </script>
   </body>
 </html>
